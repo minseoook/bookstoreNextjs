@@ -51,6 +51,8 @@
 import NextAuth from "next-auth";
 
 import Credentials from "next-auth/providers/credentials";
+import cookie from "cookie";
+import { cookies } from "next/headers";
 
 export const {
   handlers: { GET, POST },
@@ -78,7 +80,13 @@ export const {
         }
 
         const user = await response.json();
-
+        let setCookie = response.headers.get("Set-Cookie");
+        console.log("set-cookie", setCookie);
+        if (setCookie) {
+          const parsed = cookie.parse(setCookie);
+          console.log(parsed);
+          cookies().set("connect.sid", parsed["token"], parsed); // 브라우저에 쿠키를 심어주는 것
+        }
         return { email: user.email };
       },
     }),
